@@ -777,6 +777,19 @@ omega_dual/fast:
 .PHONY : omega_dual/fast
 
 #=============================================================================
+# Target rules for targets named robot_inverse_dual
+
+# Build rule for target.
+robot_inverse_dual: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 robot_inverse_dual
+.PHONY : robot_inverse_dual
+
+# fast build rule for target.
+robot_inverse_dual/fast:
+	$(MAKE) -f franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build.make franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build
+.PHONY : robot_inverse_dual/fast
+
+#=============================================================================
 # Target rules for targets named robot_inverse_single
 
 # Build rule for target.
@@ -862,6 +875,7 @@ help:
 	@echo "... rosgraph_msgs_generate_messages_py"
 	@echo "... omega_driver"
 	@echo "... omega_dual"
+	@echo "... robot_inverse_dual"
 	@echo "... robot_inverse_single"
 	@echo "... trac_ik"
 .PHONY : help

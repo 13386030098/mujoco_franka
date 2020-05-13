@@ -120,7 +120,7 @@ int main(int argc, char **argv)
 
         bool isRate = rate.sleep();
         std::cout<<msg1<<std::endl;
-        std::cout<<msg2<<std::endl;
+//        std::cout<<msg2<<std::endl;
 //        if(!isRate)
 //            std::cout<<"loop rate failed"<<std::endl;
     }

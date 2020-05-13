@@ -166,6 +166,21 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
+franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/rule:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f CMakeFiles/Makefile2 franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/rule
+.PHONY : franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/rule
+
+# Convenience name for target.
+robot_inverse_dual: franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/rule
+
+.PHONY : robot_inverse_dual
+
+# fast build rule for target.
+robot_inverse_dual/fast:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build.make franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build
+.PHONY : robot_inverse_dual/fast
+
+# Convenience name for target.
 franka_teleopreation/CMakeFiles/robot_inverse_single.dir/rule:
 	cd /home/zzz/mujoco_franka/build && $(MAKE) -f CMakeFiles/Makefile2 franka_teleopreation/CMakeFiles/robot_inverse_single.dir/rule
 .PHONY : franka_teleopreation/CMakeFiles/robot_inverse_single.dir/rule
@@ -179,6 +194,33 @@ robot_inverse_single: franka_teleopreation/CMakeFiles/robot_inverse_single.dir/r
 robot_inverse_single/fast:
 	cd /home/zzz/mujoco_franka/build && $(MAKE) -f franka_teleopreation/CMakeFiles/robot_inverse_single.dir/build.make franka_teleopreation/CMakeFiles/robot_inverse_single.dir/build
 .PHONY : robot_inverse_single/fast
+
+src/robot_inverse_dual.o: src/robot_inverse_dual.cpp.o
+
+.PHONY : src/robot_inverse_dual.o
+
+# target to build an object file
+src/robot_inverse_dual.cpp.o:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build.make franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/src/robot_inverse_dual.cpp.o
+.PHONY : src/robot_inverse_dual.cpp.o
+
+src/robot_inverse_dual.i: src/robot_inverse_dual.cpp.i
+
+.PHONY : src/robot_inverse_dual.i
+
+# target to preprocess a source file
+src/robot_inverse_dual.cpp.i:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build.make franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/src/robot_inverse_dual.cpp.i
+.PHONY : src/robot_inverse_dual.cpp.i
+
+src/robot_inverse_dual.s: src/robot_inverse_dual.cpp.s
+
+.PHONY : src/robot_inverse_dual.s
+
+# target to generate assembly for a file
+src/robot_inverse_dual.cpp.s:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/build.make franka_teleopreation/CMakeFiles/robot_inverse_dual.dir/src/robot_inverse_dual.cpp.s
+.PHONY : src/robot_inverse_dual.cpp.s
 
 src/robot_inverse_single.o: src/robot_inverse_single.cpp.o
 
@@ -218,9 +260,13 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... test"
+	@echo "... robot_inverse_dual"
 	@echo "... robot_inverse_single"
 	@echo "... install/strip"
 	@echo "... install/local"
+	@echo "... src/robot_inverse_dual.o"
+	@echo "... src/robot_inverse_dual.i"
+	@echo "... src/robot_inverse_dual.s"
 	@echo "... src/robot_inverse_single.o"
 	@echo "... src/robot_inverse_single.i"
 	@echo "... src/robot_inverse_single.s"

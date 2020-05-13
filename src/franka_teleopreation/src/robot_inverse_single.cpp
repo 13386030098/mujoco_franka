@@ -88,7 +88,7 @@ public:
   teleoperation():
     is_first_(true)
   {
-    direction_pos_x = 1;
+    direction_pos_x = -1;
     direction_pos_y = 1;
     direction_pos_z = 1;
     direction_rpy_r = 1;
@@ -97,9 +97,9 @@ public:
     scale_p_x = 0.4;
     scale_p_y = 0.4;
     scale_p_z = 0.4;
-    scale_r_x = 0.15;
-    scale_r_y = 0.15;
-    scale_r_z = 0.15;
+    scale_r_x = 0.1;
+    scale_r_y = 0.1;
+    scale_r_z = 0.1;
 
     std::cout<<"teleoperation start ..."<<std::endl;
     pub = nh.advertise<robot_msgs::ik>("/ik", 100, true);
@@ -150,8 +150,8 @@ public:
 
     if(kinematics_status>=0){
         printf("%s \n","KDL FK Succes");
-        std::cout <<"Origin: " << p(0) << "," << p(1) << "," << p(2) << std::endl;
-        std::cout <<"RPY: " << roll << "," << pitch << "," << yaw << std::endl;
+//        std::cout <<"Origin: " << p(0) << "," << p(1) << "," << p(2) << std::endl;
+//        std::cout <<"RPY: " << roll << "," << pitch << "," << yaw << std::endl;
 
      }else{
          printf("%s \n","Error: could not calculate forward kinematics :(");

@@ -52,8 +52,10 @@ target_link_libraries(robot_inverse_single ${catkin_LIBRARIES}
 					   ${Boost_LIBRARIES}
 				           ${orocos_kdl_LIBRARIES})
 
-#add_executable(robot_inverse_dual src/robot_inverse_dual.cpp)
-#target_link_libraries(robot_inverse_dual ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_executable(robot_inverse_dual src/robot_inverse_dual.cpp)
+target_link_libraries(robot_inverse_dual ${catkin_LIBRARIES} 
+					 ${Boost_LIBRARIES}
+					 ${orocos_kdl_LIBRARIES})
 
 
 install(TARGETS robot_inverse_single
