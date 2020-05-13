@@ -1,0 +1,2 @@
+franka_description:franka_driver:franka_teleopreation:franka_track_ik:master_driver:robot_msgs
+-DCATKIN_DEVEL_PREFIX=/home/zzz/mujoco_franka/devel -DCMAKE_INSTALL_PREFIX=/home/zzz/mujoco_franka/install -G Unix Makefiles

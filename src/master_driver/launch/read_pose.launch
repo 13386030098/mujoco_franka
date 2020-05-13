@@ -1,0 +1,4 @@
+<launch>
+    <node name="read_pose" pkg="omega7_driver" type="read_pose" respawn="true" output="screen">
+  </node>
+</launch>
