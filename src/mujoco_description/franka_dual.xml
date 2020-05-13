@@ -73,12 +73,12 @@
         <geom name='floor' material="floor_mat" pos='0 0 0' size='2.5 2.5 0.1'  type='plane' />
 
 
-        <body name="box_link" pos="0.6 0.1 0.3">
+        <body name="box_link" pos="0.5 0 0.3">
           <geom size=".2 .3 .001"  type="box" rgba=".5 .55 .5 1"/>
         </body>
-        <body name="grasp_link" pos="0.55 0.05 0.4">
+        <body name="grasp_link" pos="0.53 0 0.4">
           <freejoint/>
-          <geom  size=".02 .02 .02"  type="box" rgba=".5 .55 .5 1" mass="0.1"/>
+          <geom  size=".02 .02 .02"  type="box" rgba=".9 .5 .5 1" mass="0.1"/>
         </body>
 
         <body name="panda0_link0" childclass="panda" >
@@ -123,7 +123,7 @@
                  </body>
              </body>
          </body>
-        <body name="panda1_link0" pos="0.55 -0.9 0" quat="0.707107 0 0 0.707107" childclass="panda" >
+        <body name="panda1_link0" pos="0.55 -0.55 0" quat="0.707107 0 0 0.707107" childclass="panda" >
             <geom class="panda_viz" mesh="link0_viz"/>
             <geom class="panda_col" mesh="link0_col" mass="2.91242"/>
             <body name="panda1_link1" pos="0 0 0.333">
@@ -156,7 +156,7 @@
                                         <geom class="panda_col" mesh="link7_col" mass="0.2"/>
                                         <geom pos="0 0 0.131" euler='0 0 0' class="panda_viz" mesh="endscop_viz" />
                                         <geom pos="0 0 0.131" euler='0 0 0' class="panda_col" mesh="endscop_col" mass="0.1" />
-                                        <camera name="camera" mode="fixed"  pos="0 0 0.5"/>
+                                        <camera name="camera" mode="fixed"  pos="0 0 0" euler='-3.2 0 -0.6235987755982988'/>
                                     </body>
                                 </body>
                             </body>

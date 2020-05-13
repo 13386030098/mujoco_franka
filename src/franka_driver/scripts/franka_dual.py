@@ -22,9 +22,10 @@ def callback_omega_2(data):
     sim.data.ctrl[7]  = data.data[0]
     sim.data.ctrl[8]  = data.data[1]
     sim.data.ctrl[9]  = data.data[2]
-    sim.data.ctrl[10] = data.data[3]
-    sim.data.ctrl[12] = data.data[4]
-    sim.data.ctrl[12] = data.data[5]
+    sim.data.ctrl[10] = -1.2 + data.data[3]
+    sim.data.ctrl[11] = data.data[4]
+    sim.data.ctrl[12] = 2 + data.data[5]
+    sim.data.ctrl[13] = 0.9 + data.data[6]
 
 def listener():
     rospy.init_node('listener', anonymous=True)

@@ -40,34 +40,32 @@ private:
   Eigen::Vector3d master_2_pos_zero;
   Eigen::Vector3d master_1_rpy_zero;
   Eigen::Vector3d master_2_rpy_zero;
+
   Eigen::Vector3d master_1_pos;
   Eigen::Vector3d master_2_pos;
   Eigen::Vector3d master_1_rpy;
   Eigen::Vector3d master_2_rpy;
 
-  Eigen::Affine3d frame_end_zero_position_1;
-  Eigen::Affine3d frame_end_zero_position_2;
-
-
-  Eigen::Affine3d frame_end_1;
-  Eigen::Affine3d frame_end_2;
-
   Eigen::Vector3d slave_1_pos_zero;
   Eigen::Vector3d slave_2_pos_zero;
+  Eigen::Matrix<double,3,3> slave_1_rotation_zero;
+  Eigen::Matrix<double,3,3> slave_2_rotation_zero;
 
   Eigen::Vector3d slave_1_desire_pos;
   Eigen::Vector3d slave_2_desire_pos;
+  Eigen::Matrix<double,3,3> slave_1_desire_rotation;
+  Eigen::Matrix<double,3,3> slave_2_desire_rotation;
 
-  Eigen::Vector3d slave_1_desire_rpy_r_increase;
-  Eigen::Vector3d slave_1_desire_rpy_p_increase;
-  Eigen::Vector3d slave_1_desire_rpy_y_increase;
+  Eigen::VectorXd slave_1_joint_values;
+  Eigen::VectorXd slave_2_joint_values;
 
-  Eigen::Vector3d slave_2_desire_rpy_r_increase;
-  Eigen::Vector3d slave_2_desire_rpy_p_increase;
-  Eigen::Vector3d slave_2_desire_rpy_y_increase;
+  double slave_1_desire_rpy_r_increase;
+  double slave_1_desire_rpy_p_increase;
+  double slave_1_desire_rpy_y_increase;
 
-  Eigen::VectorXd joint_values_omega_1;
-  Eigen::VectorXd joint_values_omega_2;
+  double slave_2_desire_rpy_r_increase;
+  double slave_2_desire_rpy_p_increase;
+  double slave_2_desire_rpy_y_increase;
 
   double direction_pos_x;
   double direction_pos_y;
@@ -115,18 +113,18 @@ public:
     is_first_1(true),
     is_first_2(true)
   {
-    direction_pos_x = -1;
+    direction_pos_x = 1;
     direction_pos_y = 1;
     direction_pos_z = 1;
     direction_rpy_r = 1;
     direction_rpy_p = 1;
     direction_rpy_y = 1;
-    scale_p_x = 0.3;
-    scale_p_y = 0.3;
-    scale_p_z = 0.3;
-    scale_r_x = 0.6;
-    scale_r_y = 0.6;
-    scale_r_z = 0.6;
+    scale_p_x = 0.4;
+    scale_p_y = 0.4;
+    scale_p_z = 0.4;
+    scale_r_x = 0.1;
+    scale_r_y = 0.1;
+    scale_r_z = 0.1;
 
     std::cout<<"teleoperation start ..."<<std::endl;
     pub_omega1 = nh.advertise<robot_msgs::ik>("omega1/ik", 100, true);
@@ -198,13 +196,22 @@ public:
           master_1_pos_zero[i] = omega7_msg->data[i];
       for(unsigned int i=0;i<3;i++)
           master_1_rpy_zero[i] = omega7_msg->data[i+3];
-
       omega_1_button_zero = omega7_msg->button[0];
 
+      slave_1_pos_zero[0] = p[0];
+      slave_1_pos_zero[1] = p[1];
+      slave_1_pos_zero[2] = p[2];
+      slave_1_rotation_zero(0,0) = M(0,0); slave_1_rotation_zero(0,1) = M(0,1); slave_1_rotation_zero(0,2) = M(0,2);
+      slave_1_rotation_zero(1,0) = M(1,0); slave_1_rotation_zero(1,1) = M(1,1); slave_1_rotation_zero(1,2) = M(1,2);
+      slave_1_rotation_zero(2,0) = M(2,0); slave_1_rotation_zero(2,1) = M(2,1); slave_1_rotation_zero(2,2) = M(2,2);
+
+      std::cout << slave_1_pos_zero << std::endl;
+      std::cout << slave_1_rotation_zero << std::endl;
 
       is_first_1=false;
       return;
     }
+
     for(unsigned int i=0;i<3;i++)
         master_1_pos[i] = omega7_msg->data[i];
     for(unsigned int i=0;i<3;i++)
@@ -217,16 +224,64 @@ public:
     slave_1_desire_pos[1] = direction_pos_y * (master_1_pos[1]-master_1_pos_zero[1]) * scale_p_y + slave_1_pos_zero[1];
     slave_1_desire_pos[2] = direction_pos_z * (master_1_pos[2]-master_1_pos_zero[2]) * scale_p_y + slave_1_pos_zero[2];
 
-    slave_1_desire_rpy_r_increase[0] = direction_rpy_r * scale_r_x*(master_1_rpy[0]-master_1_rpy_zero[0]);
-    slave_1_desire_rpy_p_increase[1] = direction_rpy_p * scale_r_y*(master_1_rpy[1]-master_1_rpy_zero[1]);
-    slave_1_desire_rpy_y_increase[2] = direction_rpy_y * scale_r_z*(master_1_rpy[2]-master_1_rpy_zero[2]);
+    slave_1_desire_rpy_r_increase = direction_rpy_r * scale_r_x*(master_1_rpy[0]-master_1_rpy_zero[0]);
+    slave_1_desire_rpy_p_increase = direction_rpy_p * scale_r_y*(master_1_rpy[1]-master_1_rpy_zero[1]);
+    slave_1_desire_rpy_y_increase = direction_rpy_y * scale_r_z*(master_1_rpy[2]-master_1_rpy_zero[2]);
 
+    slave_1_desire_rotation = (Eigen::AngleAxisd(slave_1_desire_rpy_y_increase,Eigen::Vector3d::UnitZ()))*
+                              (Eigen::AngleAxisd(slave_1_desire_rpy_p_increase, Eigen::Vector3d::UnitY()))*
+                              (Eigen::AngleAxisd(slave_1_desire_rpy_r_increase, Eigen::Vector3d::UnitX()))
+                              *slave_1_rotation_zero;
 
+    KDL::Frame F_dest;
+    F_dest.M(0,0) = slave_1_desire_rotation(0,0);
+    F_dest.M(0,1) = slave_1_desire_rotation(0,1);
+    F_dest.M(0,2) = slave_1_desire_rotation(0,2);
 
+    F_dest.M(1,0) = slave_1_desire_rotation(1,0);
+    F_dest.M(1,1) = slave_1_desire_rotation(1,1);
+    F_dest.M(1,2) = slave_1_desire_rotation(1,2);
 
+    F_dest.M(2,0) = slave_1_desire_rotation(2,0);
+    F_dest.M(2,1) = slave_1_desire_rotation(2,1);
+    F_dest.M(2,2) = slave_1_desire_rotation(2,2);
 
+    F_dest.p(0) = slave_1_desire_pos[0];
+    F_dest.p(1) = slave_1_desire_pos[1];
+    F_dest.p(2) = slave_1_desire_pos[2];
 
+    TRAC_IK::TRAC_IK ik_solver(chain_start, chain_end, urdf_param, timeout, error);
 
+    KDL::JntArray joint_seed(nj);
+    KDL::SetToZero(joint_seed);
+    KDL::JntArray result(joint_seed);
+
+    joint_seed(0) =  0;
+    joint_seed(1) =  0;
+    joint_seed(2) =  0;
+    joint_seed(3) = -1.0;
+    joint_seed(4) =  0;
+    joint_seed(5) =  1.5;
+    joint_seed(6) =  0.9;
+
+    int rc=ik_solver.CartToJnt(joint_seed, F_dest, result);
+    if(rc < 0)
+        printf("%s \n","Error: could not calculate forward kinematics");
+    else{
+//        printf("%s \n","TRAC IK Succes");
+//        for(unsigned int i = 0; i < nj; i++)
+//            std::cout << result(i) << " ";
+    }
+
+    robot_msgs::ik ik_msg;
+    ik_msg.data.resize(7);
+    slave_1_joint_values.resize(7);
+
+    for(int i = 0; i < 7; i++)
+    {
+      ik_msg.data[i] = result(i);
+    }
+    pub_omega1.publish(ik_msg);
 
   }
 
@@ -241,8 +296,12 @@ public:
 
       omega_2_button_zero = omega7_msg->button[0];
 
-
-
+      slave_2_pos_zero[0] = p[0];
+      slave_2_pos_zero[1] = p[1];
+      slave_2_pos_zero[2] = p[2];
+      slave_2_rotation_zero(0,0) = M(0,0); slave_2_rotation_zero(0,1) = M(0,1); slave_2_rotation_zero(0,2) = M(0,2);
+      slave_2_rotation_zero(1,0) = M(1,0); slave_2_rotation_zero(1,1) = M(1,1); slave_2_rotation_zero(1,2) = M(1,2);
+      slave_2_rotation_zero(2,0) = M(2,0); slave_2_rotation_zero(2,1) = M(2,1); slave_2_rotation_zero(2,2) = M(2,2);
 
       is_first_2=false;
       return;
@@ -259,11 +318,64 @@ public:
     slave_2_desire_pos[1] = direction_pos_y * (master_2_pos[1]-master_2_pos_zero[1]) * scale_p_y + slave_2_pos_zero[1];
     slave_2_desire_pos[2] = direction_pos_z * (master_2_pos[2]-master_2_pos_zero[2]) * scale_p_y + slave_2_pos_zero[2];
 
-    slave_2_desire_rpy_r_increase[0] = direction_rpy_r * scale_r_x*(master_2_rpy[0]-master_2_rpy_zero[0]);
-    slave_2_desire_rpy_p_increase[1] = direction_rpy_p * scale_r_y*(master_2_rpy[1]-master_2_rpy_zero[1]);
-    slave_2_desire_rpy_y_increase[2] = direction_rpy_y * scale_r_z*(master_2_rpy[2]-master_2_rpy_zero[2]);
+    slave_2_desire_rpy_r_increase = direction_rpy_r * scale_r_x*(master_2_rpy[0]-master_2_rpy_zero[0]);
+    slave_2_desire_rpy_p_increase = direction_rpy_p * scale_r_y*(master_2_rpy[1]-master_2_rpy_zero[1]);
+    slave_2_desire_rpy_y_increase = direction_rpy_y * scale_r_z*(master_2_rpy[2]-master_2_rpy_zero[2]);
 
+    slave_2_desire_rotation = (Eigen::AngleAxisd(slave_2_desire_rpy_y_increase, Eigen::Vector3d::UnitZ()))*
+                              (Eigen::AngleAxisd(slave_2_desire_rpy_p_increase, Eigen::Vector3d::UnitY()))*
+                              (Eigen::AngleAxisd(slave_2_desire_rpy_r_increase, Eigen::Vector3d::UnitX()))
+                              *slave_2_rotation_zero;
 
+    KDL::Frame F_dest;
+    F_dest.M(0,0) = slave_2_desire_rotation(0,0);
+    F_dest.M(0,1) = slave_2_desire_rotation(0,1);
+    F_dest.M(0,2) = slave_2_desire_rotation(0,2);
+
+    F_dest.M(1,0) = slave_2_desire_rotation(1,0);
+    F_dest.M(1,1) = slave_2_desire_rotation(1,1);
+    F_dest.M(1,2) = slave_2_desire_rotation(1,2);
+
+    F_dest.M(2,0) = slave_2_desire_rotation(2,0);
+    F_dest.M(2,1) = slave_2_desire_rotation(2,1);
+    F_dest.M(2,2) = slave_2_desire_rotation(2,2);
+
+    F_dest.p(0) = slave_2_desire_pos[0];
+    F_dest.p(1) = slave_2_desire_pos[1];
+    F_dest.p(2) = slave_2_desire_pos[2];
+
+    TRAC_IK::TRAC_IK ik_solver(chain_start, chain_end, urdf_param, timeout, error);
+
+    KDL::JntArray joint_seed(nj);
+    KDL::SetToZero(joint_seed);
+    KDL::JntArray result(joint_seed);
+
+    joint_seed(0) =  0;
+    joint_seed(1) =  0;
+    joint_seed(2) =  0;
+    joint_seed(3) = -1;
+    joint_seed(4) =  0;
+    joint_seed(5) =  2;
+    joint_seed(6) =  0.9;
+
+    int rc=ik_solver.CartToJnt(joint_seed, F_dest, result);
+    if(rc < 0)
+        printf("%s \n","Error: could not calculate forward kinematics");
+    else{
+        printf("%s \n","TRAC IK Succes");
+        for(unsigned int i = 0; i < nj; i++)
+            std::cout << result(i) << " ";
+    }
+
+    robot_msgs::ik ik_msg;
+    ik_msg.data.resize(7);
+    slave_2_joint_values.resize(7);
+
+    for(int i = 0; i < 7; i++)
+    {
+      ik_msg.data[i] = result(i);
+    }
+    pub_omega2.publish(ik_msg);
 
   }
 
