@@ -21,8 +21,6 @@
 #include <kdl/jacobian.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
 
-
-
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
@@ -95,18 +93,32 @@ private:
   double omega_1_button_desire;
   double omega_2_button_desire;
 
-
   bool is_first_1;
   bool is_first_2;
 
-  std::string chain_start, chain_end, urdf_param;
-  double timeout;
-  const double error = 1e-5;
-  unsigned int nj;
-  KDL::Chain chain;
-  KDL::JntArray ll, ul; //lower joint limits, upper joint limits
-  KDL::Vector p;
-  KDL::Rotation M;
+
+  std::string slave_1_chain_start, slave_1_chain_end, slave_1_urdf_param;
+  std::string slave_2_chain_start, slave_2_chain_end, slave_2_urdf_param;
+
+  double slave_1_timeout;
+  double slave_2_timeout;
+
+  const double slave_1_error = 1e-5;
+  const double slave_2_error = 1e-5;
+
+  unsigned int slave_1_nj;
+  unsigned int slave_2_nj;
+
+  KDL::Chain slave_1_chain;
+  KDL::Chain slave_2_chain;
+
+  KDL::JntArray slave_1_ll, slave_1_ul; //lower joint limits, upper joint limits
+  KDL::JntArray slave_2_ll, slave_2_ul; //lower joint limits, upper joint limits
+
+  KDL::Vector slave_1_p;
+  KDL::Vector slave_2_p;
+  KDL::Rotation slave_1_M;
+  KDL::Rotation slave_2_M;
 
 public:
   teleoperation():
@@ -132,52 +144,103 @@ public:
     sub_omega1 = nh.subscribe("omega1/omega_map", 100, &teleoperation::operationCallback_1, this);
     sub_omega2 = nh.subscribe("omega2/omega_map", 100, &teleoperation::operationCallback_2, this);
 
-    nh.param("chain_start", chain_start, std::string("panda_link0"));
-    nh.param("chain_end", chain_end, std::string("panda_link8"));
+    nh.param("slave_1_chain_start", slave_1_chain_start, std::string("panda_link0"));
+    nh.param("slave_1_chain_end"  , slave_1_chain_end  , std::string("panda_link8"));
 
-    if (chain_start=="" || chain_end=="") {
+    if (slave_1_chain_start=="" || slave_1_chain_end=="") {
         ROS_FATAL("Missing chain info in launch file");
         exit (-1);
     }
-    nh.param("timeout", timeout, 0.005);
-    nh.param("urdf_param", urdf_param, std::string("/robot_description"));
 
-    TRAC_IK::TRAC_IK ik_solver(chain_start, chain_end, urdf_param, timeout, error);
-    bool valid = ik_solver.getKDLChain(chain);
+    nh.param("slave_1_timeout", slave_1_timeout, 0.005);
+    nh.param("slave_1_urdf_param", slave_1_urdf_param, std::string("/slave_1_robot_description"));
+
+    TRAC_IK::TRAC_IK slave_1_ik_solver(slave_1_chain_start, slave_1_chain_end, slave_1_urdf_param, slave_1_timeout, slave_1_error);
+    bool valid = slave_1_ik_solver.getKDLChain(slave_1_chain);
     if (!valid){
         ROS_ERROR("There was no valid KDL chain found");
         exit (-1);
     }
-    valid = ik_solver.getKDLLimits(ll,ul);
+    valid = slave_1_ik_solver.getKDLLimits(slave_1_ll, slave_1_ul);
     if (!valid){
         ROS_INFO("There were no valid KDL joint limits found");
         exit (-1);
     }
 
-    KDL::ChainFkSolverPos_recursive fk_solver(chain);
+    KDL::ChainFkSolverPos_recursive slave_1_fk_solver(slave_1_chain);
 
-    nj = chain.getNrOfJoints();
-    ROS_INFO ("Using %d joints", nj);
-    KDL::JntArray jointpositions(nj);
+    slave_1_nj = slave_1_chain.getNrOfJoints();
+    ROS_INFO ("Using %d joints", slave_1_nj);
+    KDL::JntArray slave_1_jointpositions(slave_1_nj);
 
-    for(unsigned int i=0; i< nj; i++){
-        jointpositions(i)= 0;
+    for(unsigned int i=0; i< slave_1_nj; i++){
+        slave_1_jointpositions(i)= 0;
     }
 
-    KDL::Frame cartpos;
+    KDL::Frame slave_1_cartpos;
 
     bool kinematics_status;
-    kinematics_status = fk_solver.JntToCart(jointpositions,cartpos);
+    kinematics_status = slave_1_fk_solver.JntToCart(slave_1_jointpositions, slave_1_cartpos);
 
-    p = cartpos.p;   // Origin of the Frame
-    M = cartpos.M; // Orientation of the Frame
+    slave_1_p = slave_1_cartpos.p;   // Origin of the Frame
+    slave_1_M = slave_1_cartpos.M; // Orientation of the Frame
 
     double roll, pitch, yaw;
-    M.GetRPY(roll,pitch,yaw);
+    slave_1_M.GetRPY(roll,pitch,yaw);
 
     if(kinematics_status>=0){
         printf("%s \n","KDL FK Succes");
-        std::cout <<"Origin: " << p(0) << "," << p(1) << "," << p(2) << std::endl;
+        std::cout <<"Origin: " << slave_1_p(0) << "," << slave_1_p(1) << "," << slave_1_p(2) << std::endl;
+        std::cout <<"RPY: " << roll << "," << pitch << "," << yaw << std::endl;
+
+     }else{
+         printf("%s \n","Error: could not calculate forward kinematics :(");
+    }
+
+
+    nh.param("slave_2_chain_start", slave_2_chain_start, std::string("panda_link0"));
+    nh.param("slave_2_chain_end"  , slave_2_chain_end  , std::string("panda_link8"));
+
+    if (slave_2_chain_start=="" || slave_2_chain_end=="") {
+        ROS_FATAL("Missing chain info in launch file");
+        exit (-1);
+    }
+    nh.param("slave_2_timeout", slave_2_timeout, 0.005);
+    nh.param("slave_2_urdf_param", slave_2_urdf_param, std::string("/slave_2_robot_description"));
+    TRAC_IK::TRAC_IK slave_2_ik_solver(slave_2_chain_start, slave_2_chain_end, slave_2_urdf_param, slave_2_timeout, slave_2_error);
+
+    valid = slave_2_ik_solver.getKDLChain(slave_2_chain);
+    if (!valid){
+        ROS_ERROR("There was no valid KDL chain found");
+        exit (-1);
+    }
+    valid = slave_2_ik_solver.getKDLLimits(slave_2_ll, slave_2_ul);
+    if (!valid){
+        ROS_INFO("There were no valid KDL joint limits found");
+        exit (-1);
+    }
+    KDL::ChainFkSolverPos_recursive slave_2_fk_solver(slave_2_chain);
+    slave_2_nj = slave_2_chain.getNrOfJoints();
+    ROS_INFO ("Using %d joints", slave_2_nj);
+    KDL::JntArray slave_2_jointpositions(slave_2_nj);
+
+    for(unsigned int i=0; i< slave_2_nj; i++){
+        slave_2_jointpositions(i)= 0;
+    }
+
+    KDL::Frame slave_2_cartpos;
+
+    kinematics_status;
+    kinematics_status = slave_2_fk_solver.JntToCart(slave_2_jointpositions, slave_2_cartpos);
+
+    slave_2_p = slave_2_cartpos.p;   // Origin of the Frame
+    slave_2_M = slave_2_cartpos.M; // Orientation of the Frame
+
+    slave_2_M.GetRPY(roll,pitch,yaw);
+
+    if(kinematics_status >= 0){
+        printf("%s \n","KDL FK Succes");
+        std::cout <<"Origin: " << slave_2_p(0) << "," << slave_2_p(1) << "," << slave_2_p(2) << std::endl;
         std::cout <<"RPY: " << roll << "," << pitch << "," << yaw << std::endl;
 
      }else{
@@ -185,6 +248,7 @@ public:
     }
 
   }
+
 
   ~teleoperation(){}
 
@@ -198,12 +262,12 @@ public:
           master_1_rpy_zero[i] = omega7_msg->data[i+3];
       omega_1_button_zero = omega7_msg->button[0];
 
-      slave_1_pos_zero[0] = p[0];
-      slave_1_pos_zero[1] = p[1];
-      slave_1_pos_zero[2] = p[2];
-      slave_1_rotation_zero(0,0) = M(0,0); slave_1_rotation_zero(0,1) = M(0,1); slave_1_rotation_zero(0,2) = M(0,2);
-      slave_1_rotation_zero(1,0) = M(1,0); slave_1_rotation_zero(1,1) = M(1,1); slave_1_rotation_zero(1,2) = M(1,2);
-      slave_1_rotation_zero(2,0) = M(2,0); slave_1_rotation_zero(2,1) = M(2,1); slave_1_rotation_zero(2,2) = M(2,2);
+      slave_1_pos_zero[0] = slave_1_p[0];
+      slave_1_pos_zero[1] = slave_1_p[1];
+      slave_1_pos_zero[2] = slave_1_p[2];
+      slave_1_rotation_zero(0,0) = slave_1_M(0,0); slave_1_rotation_zero(0,1) = slave_1_M(0,1); slave_1_rotation_zero(0,2) = slave_1_M(0,2);
+      slave_1_rotation_zero(1,0) = slave_1_M(1,0); slave_1_rotation_zero(1,1) = slave_1_M(1,1); slave_1_rotation_zero(1,2) = slave_1_M(1,2);
+      slave_1_rotation_zero(2,0) = slave_1_M(2,0); slave_1_rotation_zero(2,1) = slave_1_M(2,1); slave_1_rotation_zero(2,2) = slave_1_M(2,2);
 
       std::cout << slave_1_pos_zero << std::endl;
       std::cout << slave_1_rotation_zero << std::endl;
@@ -250,9 +314,9 @@ public:
     F_dest.p(1) = slave_1_desire_pos[1];
     F_dest.p(2) = slave_1_desire_pos[2];
 
-    TRAC_IK::TRAC_IK ik_solver(chain_start, chain_end, urdf_param, timeout, error);
+    TRAC_IK::TRAC_IK slave_1_ik_solver(slave_1_chain_start, slave_1_chain_end, slave_1_urdf_param, slave_1_timeout, slave_1_error);
 
-    KDL::JntArray joint_seed(nj);
+    KDL::JntArray joint_seed(slave_1_nj);
     KDL::SetToZero(joint_seed);
     KDL::JntArray result(joint_seed);
 
@@ -264,7 +328,7 @@ public:
     joint_seed(5) =  1.5;
     joint_seed(6) =  0.9;
 
-    int rc=ik_solver.CartToJnt(joint_seed, F_dest, result);
+    int rc = slave_1_ik_solver.CartToJnt(joint_seed, F_dest, result);
     if(rc < 0)
         printf("%s \n","Error: could not calculate forward kinematics");
     else{
@@ -296,12 +360,12 @@ public:
 
       omega_2_button_zero = omega7_msg->button[0];
 
-      slave_2_pos_zero[0] = p[0];
-      slave_2_pos_zero[1] = p[1];
-      slave_2_pos_zero[2] = p[2];
-      slave_2_rotation_zero(0,0) = M(0,0); slave_2_rotation_zero(0,1) = M(0,1); slave_2_rotation_zero(0,2) = M(0,2);
-      slave_2_rotation_zero(1,0) = M(1,0); slave_2_rotation_zero(1,1) = M(1,1); slave_2_rotation_zero(1,2) = M(1,2);
-      slave_2_rotation_zero(2,0) = M(2,0); slave_2_rotation_zero(2,1) = M(2,1); slave_2_rotation_zero(2,2) = M(2,2);
+      slave_2_pos_zero[0] = slave_2_p[0];
+      slave_2_pos_zero[1] = slave_2_p[1];
+      slave_2_pos_zero[2] = slave_2_p[2];
+      slave_2_rotation_zero(0,0) = slave_2_M(0,0); slave_2_rotation_zero(0,1) = slave_2_M(0,1); slave_2_rotation_zero(0,2) = slave_2_M(0,2);
+      slave_2_rotation_zero(1,0) = slave_2_M(1,0); slave_2_rotation_zero(1,1) = slave_2_M(1,1); slave_2_rotation_zero(1,2) = slave_2_M(1,2);
+      slave_2_rotation_zero(2,0) = slave_2_M(2,0); slave_2_rotation_zero(2,1) = slave_2_M(2,1); slave_2_rotation_zero(2,2) = slave_2_M(2,2);
 
       is_first_2=false;
       return;
@@ -344,9 +408,9 @@ public:
     F_dest.p(1) = slave_2_desire_pos[1];
     F_dest.p(2) = slave_2_desire_pos[2];
 
-    TRAC_IK::TRAC_IK ik_solver(chain_start, chain_end, urdf_param, timeout, error);
+    TRAC_IK::TRAC_IK slave_2_ik_solver(slave_2_chain_start, slave_2_chain_end, slave_2_urdf_param, slave_2_timeout, slave_2_error);
 
-    KDL::JntArray joint_seed(nj);
+    KDL::JntArray joint_seed(slave_2_nj);
     KDL::SetToZero(joint_seed);
     KDL::JntArray result(joint_seed);
 
@@ -358,12 +422,12 @@ public:
     joint_seed(5) =  2;
     joint_seed(6) =  0.9;
 
-    int rc=ik_solver.CartToJnt(joint_seed, F_dest, result);
+    int rc = slave_2_ik_solver.CartToJnt(joint_seed, F_dest, result);
     if(rc < 0)
         printf("%s \n","Error: could not calculate forward kinematics");
     else{
         printf("%s \n","TRAC IK Succes");
-        for(unsigned int i = 0; i < nj; i++)
+        for(unsigned int i = 0; i < slave_2_nj; i++)
             std::cout << result(i) << " ";
     }
 

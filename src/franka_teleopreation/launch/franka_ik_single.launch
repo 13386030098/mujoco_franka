@@ -5,7 +5,7 @@
   <arg name="chain_end" default="panda_link8" />
   <arg name="timeout" default="0.005" />
 
-  <param name="robot_description" textfile="$(find franka_description)/robots/panda_arm.urdf" />
+  <param name="robot_description" textfile="$(find franka_description)/robots/panda_arm_instrumrnt.urdf" />
 
   <node name="robot_inverse_single" pkg="franka_teleopreation" type="robot_inverse_single" output="screen">
     <param name="num_samples" value="$(arg num_samples)"/>

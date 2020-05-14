@@ -1,19 +1,31 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="num_samples" default="1000" />
-  <arg name="chain_start" default="panda_link0" />
-  <arg name="chain_end" default="panda_link8" />
-  <arg name="timeout" default="0.005" />
+  <arg name="slave_1_num_samples" default="1000" />
+  <arg name="slave_1_chain_start" default="panda_link0" />
+  <arg name="slave_1_chain_end" default="panda_link8" />
+  <arg name="slave_1_timeout" default="0.005" />
 
-  <param name="robot_description" textfile="$(find franka_description)/robots/panda_arm.urdf" />
+  <arg name="slave_2_num_samples" default="1000" />
+  <arg name="slave_2_chain_start" default="panda_link0" />
+  <arg name="slave_2_chain_end" default="panda_link8" />
+  <arg name="slave_2_timeout" default="0.005" />
+
+  <param name="slave_1_robot_description" textfile="$(find franka_description)/robots/panda_arm_instrumrnt.urdf" />
+  <param name="slave_2_robot_description" textfile="$(find franka_description)/robots/panda_arm_endscope.urdf" />
 
   <node name="robot_inverse_dual" pkg="franka_teleopreation" type="robot_inverse_dual" output="screen">
-    <param name="num_samples" value="$(arg num_samples)"/>
-    <param name="chain_start" value="$(arg chain_start)"/>
-    <param name="chain_end" value="$(arg chain_end)"/>
-    <param name="timeout" value="$(arg timeout)"/>
-    <param name="urdf_param" value="/robot_description"/>
-  </node>
+    <param name="slave_1_num_samples" value="$(arg slave_1_num_samples)"/>
+    <param name="slave_1_chain_start" value="$(arg slave_1_chain_start)"/>
+    <param name="slave_1_chain_end" value="$(arg slave_1_chain_end)"/>
+    <param name="slave_1_timeout" value="$(arg slave_1_timeout)"/>
+    <param name="slave_1_urdf_param" value="/slave_1_robot_description"/>
 
+    <param name="slave_2_num_samples" value="$(arg slave_2_num_samples)"/>
+    <param name="slave_2_chain_start" value="$(arg slave_2_chain_start)"/>
+    <param name="slave_2_chain_end" value="$(arg slave_2_chain_end)"/>
+    <param name="slave_2_timeout" value="$(arg slave_2_timeout)"/>
+    <param name="slave_2_urdf_param" value="/slave_2_robot_description"/>
+
+  </node>
 
 </launch>

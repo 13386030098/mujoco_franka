@@ -170,7 +170,7 @@
 
   <link name="panda_link8"/>
   <joint name="panda_joint8" type="fixed">
-    <origin rpy="0 0 0" xyz="0 0 0.49"/>
+    <origin rpy="0 0 0" xyz="0 0 0.278"/>
     <parent link="panda_link7"/>
     <child link="panda_link8"/>
     <axis xyz="0 0 0"/>

@@ -73,12 +73,24 @@
         <geom name='floor' material="floor_mat" pos='0 0 0' size='2.5 2.5 0.1'  type='plane' />
 
 
-        <body name="box_link" pos="0.5 0 0.3">
+        <body name="box_link" pos="0.6 0 0.3">
           <geom size=".2 .3 .001"  type="box" rgba=".5 .55 .5 1"/>
         </body>
-        <body name="grasp_link" pos="0.53 0 0.4">
+        <body name="grasp_link_1" pos="0.57 0 0.4">
           <freejoint/>
-          <geom  size=".02 .02 .02"  type="box" rgba=".9 .5 .5 1" mass="0.1"/>
+          <geom  size=".01 .01 .01"  type="box" rgba="0 .96 1 1" mass="0.1"/>
+        </body>
+        <body name="grasp_link_2" pos="0.57 -0.02 0.4">
+          <freejoint/>
+          <geom  size=".01 .01 .01"  type="box" rgba=".94 .1 .94 1" mass="0.1"/>
+        </body>
+        <body name="grasp_link_3" pos="0.57 0.02 0.4">
+          <freejoint/>
+          <geom  size=".01 .01 .01"  type="box" rgba="0 1 .498 1" mass="0.1"/>
+        </body>
+        <body name="grasp_link_4" pos="0.57 -0.05 0.4">
+          <freejoint/>
+          <geom  size=".01 .01 .01"  type="box" rgba="0 .749 1 1" mass="0.1"/>
         </body>
 
         <body name="panda0_link0" childclass="panda" >
@@ -115,6 +127,7 @@
                                          <geom pos="0 0 0.107" euler='0 0 0' class="panda_viz" mesh="grind_viz" />
                                          <geom pos="0 0 0.107" euler='0 0 0' class="panda_col" mesh="grind_col" mass="0.1" />
                                          <site name='end_effector' pos='0 0 .49' size='0.005' />
+                                         <site name="touch_sensor_site" pos="0 0 .49" size=".006 .004 .004" rgba=".9 .1 .5 1"/>
                                      </body>
                                  </body>
                              </body>
@@ -123,7 +136,7 @@
                  </body>
              </body>
          </body>
-        <body name="panda1_link0" pos="0.55 -0.55 0" quat="0.707107 0 0 0.707107" childclass="panda" >
+        <body name="panda1_link0" pos="0.55 -0.6 0" quat="0.707107 0 0 0.707107" childclass="panda" >
             <geom class="panda_viz" mesh="link0_viz"/>
             <geom class="panda_col" mesh="link0_col" mass="2.91242"/>
             <body name="panda1_link1" pos="0 0 0.333">
@@ -184,6 +197,13 @@
         <position name="panda1_joint6" joint="panda1_joint6" class="panda" kp="120" forcerange="-12 12" ctrlrange="-3.7525 2.1817"/> <!-- velocity="2.6100" -->
         <position name="panda1_joint7" joint="panda1_joint7" class="panda" kp="120" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.6100" -->
     </actuator>
+
+    <sensor>
+        <touch name="touch_sensor" 		site="touch_sensor_site"/>
+    </sensor>
+
+
+
 
 </mujoco>
 
