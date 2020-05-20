@@ -53,7 +53,7 @@ def listener():
         rate.sleep()
 
 if __name__ == '__main__':
-    model = load_model_from_path("/home/zzz/mujoco_franka/src/mujoco_description/franka_dual.xml")
+    model = load_model_from_path("/home/zzz/mujoco_franka/src/mujoco_description/franka_test.xml")
 
     sim = MjSim(model)
     viewer = MjViewer(sim)

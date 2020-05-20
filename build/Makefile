@@ -751,17 +751,17 @@ rosgraph_msgs_generate_messages_py/fast:
 .PHONY : rosgraph_msgs_generate_messages_py/fast
 
 #=============================================================================
-# Target rules for targets named omega_driver
+# Target rules for targets named omega_single
 
 # Build rule for target.
-omega_driver: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 omega_driver
-.PHONY : omega_driver
+omega_single: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 omega_single
+.PHONY : omega_single
 
 # fast build rule for target.
-omega_driver/fast:
-	$(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/build
-.PHONY : omega_driver/fast
+omega_single/fast:
+	$(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/build
+.PHONY : omega_single/fast
 
 #=============================================================================
 # Target rules for targets named omega_dual
@@ -873,7 +873,7 @@ help:
 	@echo "... rosgraph_msgs_generate_messages_cpp"
 	@echo "... rosgraph_msgs_generate_messages_lisp"
 	@echo "... rosgraph_msgs_generate_messages_py"
-	@echo "... omega_driver"
+	@echo "... omega_single"
 	@echo "... omega_dual"
 	@echo "... robot_inverse_dual"
 	@echo "... robot_inverse_single"

@@ -32,8 +32,8 @@ include_directories(
 include_directories(SYSTEM ${Boost_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS})
 link_directories(${catkin_LIBRARY_DIRS})
 
-add_executable(omega_driver src/omega_driver.cpp)
-target_link_libraries(omega_driver  ${catkin_LIBRARIES} ${Boost_LIBRARIES} "/usr/lib/libdhd.so.3" "/usr/lib/libdrd.so.3")
+add_executable(omega_single src/omega_driver_single.cpp)
+target_link_libraries(omega_single  ${catkin_LIBRARIES} ${Boost_LIBRARIES} "/usr/lib/libdhd.so.3" "/usr/lib/libdrd.so.3")
 
 add_executable(omega_dual src/omega_driver_dual.cpp)
 target_link_libraries(omega_dual  ${catkin_LIBRARIES} ${Boost_LIBRARIES} "/usr/lib/libdhd.so.3" "/usr/lib/libdrd.so.3")

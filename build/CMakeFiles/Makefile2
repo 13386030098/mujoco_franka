@@ -1649,13 +1649,13 @@ clean: franka_driver/CMakeFiles/rosgraph_msgs_generate_messages_py.dir/clean
 # Directory level rules for directory master_driver
 
 # Convenience name for "all" pass in the directory.
-master_driver/all: master_driver/CMakeFiles/omega_driver.dir/all
+master_driver/all: master_driver/CMakeFiles/omega_single.dir/all
 master_driver/all: master_driver/CMakeFiles/omega_dual.dir/all
 
 .PHONY : master_driver/all
 
 # Convenience name for "clean" pass in the directory.
-master_driver/clean: master_driver/CMakeFiles/omega_driver.dir/clean
+master_driver/clean: master_driver/CMakeFiles/omega_single.dir/clean
 master_driver/clean: master_driver/CMakeFiles/omega_dual.dir/clean
 
 .PHONY : master_driver/clean
@@ -1666,39 +1666,39 @@ master_driver/preinstall:
 .PHONY : master_driver/preinstall
 
 #=============================================================================
-# Target rules for target master_driver/CMakeFiles/omega_driver.dir
+# Target rules for target master_driver/CMakeFiles/omega_single.dir
 
 # All Build rule for target.
-master_driver/CMakeFiles/omega_driver.dir/all:
-	$(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/depend
-	$(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zzz/mujoco_franka/build/CMakeFiles --progress-num=12,13 "Built target omega_driver"
-.PHONY : master_driver/CMakeFiles/omega_driver.dir/all
+master_driver/CMakeFiles/omega_single.dir/all:
+	$(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/depend
+	$(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zzz/mujoco_franka/build/CMakeFiles --progress-num=14,15 "Built target omega_single"
+.PHONY : master_driver/CMakeFiles/omega_single.dir/all
 
 # Include target in all.
-all: master_driver/CMakeFiles/omega_driver.dir/all
+all: master_driver/CMakeFiles/omega_single.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-master_driver/CMakeFiles/omega_driver.dir/rule: cmake_check_build_system
+master_driver/CMakeFiles/omega_single.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zzz/mujoco_franka/build/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 master_driver/CMakeFiles/omega_driver.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 master_driver/CMakeFiles/omega_single.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zzz/mujoco_franka/build/CMakeFiles 0
-.PHONY : master_driver/CMakeFiles/omega_driver.dir/rule
+.PHONY : master_driver/CMakeFiles/omega_single.dir/rule
 
 # Convenience name for target.
-omega_driver: master_driver/CMakeFiles/omega_driver.dir/rule
+omega_single: master_driver/CMakeFiles/omega_single.dir/rule
 
-.PHONY : omega_driver
-
-# clean rule for target.
-master_driver/CMakeFiles/omega_driver.dir/clean:
-	$(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/clean
-.PHONY : master_driver/CMakeFiles/omega_driver.dir/clean
+.PHONY : omega_single
 
 # clean rule for target.
-clean: master_driver/CMakeFiles/omega_driver.dir/clean
+master_driver/CMakeFiles/omega_single.dir/clean:
+	$(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/clean
+.PHONY : master_driver/CMakeFiles/omega_single.dir/clean
+
+# clean rule for target.
+clean: master_driver/CMakeFiles/omega_single.dir/clean
 
 .PHONY : clean
 
@@ -1709,7 +1709,7 @@ clean: master_driver/CMakeFiles/omega_driver.dir/clean
 master_driver/CMakeFiles/omega_dual.dir/all:
 	$(MAKE) -f master_driver/CMakeFiles/omega_dual.dir/build.make master_driver/CMakeFiles/omega_dual.dir/depend
 	$(MAKE) -f master_driver/CMakeFiles/omega_dual.dir/build.make master_driver/CMakeFiles/omega_dual.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zzz/mujoco_franka/build/CMakeFiles --progress-num=14,15 "Built target omega_dual"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/zzz/mujoco_franka/build/CMakeFiles --progress-num=12,13 "Built target omega_dual"
 .PHONY : master_driver/CMakeFiles/omega_dual.dir/all
 
 # Include target in all.

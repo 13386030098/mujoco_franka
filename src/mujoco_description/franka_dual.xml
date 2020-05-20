@@ -185,9 +185,9 @@
         <position name="panda0_joint2" joint="panda0_joint2" class="panda" kp="870" forcerange="-87 87" ctrlrange="-2.8326 2.8326"/> <!-- velocity="2.1750" -->
         <position name="panda0_joint3" joint="panda0_joint3" class="panda" kp="870" forcerange="-87 87" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.1750" -->
         <position name="panda0_joint4" joint="panda0_joint4" class="panda" kp="870" forcerange="-87 87" ctrlrange="-3.1416 2.9"/> <!-- velocity="2.1750" -->
-        <position name="panda0_joint5" joint="panda0_joint5" class="panda" kp="120" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.6100" -->
-        <position name="panda0_joint6" joint="panda0_joint6" class="panda" kp="120" forcerange="-12 12" ctrlrange="-3.7525 2.1817"/> <!-- velocity="2.6100" -->
-        <position name="panda0_joint7" joint="panda0_joint7" class="panda" kp="120" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.6100" -->
+        <position name="panda0_joint5" joint="panda0_joint5" class="panda" kp="870" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.6100" -->
+        <position name="panda0_joint6" joint="panda0_joint6" class="panda" kp="870" forcerange="-12 12" ctrlrange="-3.7525 2.1817"/> <!-- velocity="2.6100" -->
+        <position name="panda0_joint7" joint="panda0_joint7" class="panda" kp="870" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.6100" -->
 
         <position name="panda1_joint1" joint="panda1_joint1" class="panda" kp="870" forcerange="-87 87" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.1750" -->
         <position name="panda1_joint2" joint="panda1_joint2" class="panda" kp="870" forcerange="-87 87" ctrlrange="-1.8326 1.8326"/> <!-- velocity="2.1750" -->
@@ -200,6 +200,16 @@
 
     <sensor>
         <touch name="touch_sensor" 		site="touch_sensor_site"/>
+
+        <jointpos name="panda0_joint1"      joint="panda0_joint1"/>
+        <jointpos name="panda0_joint2"      joint="panda0_joint2"/>
+        <jointpos name="panda0_joint3"      joint="panda0_joint3"/>
+        <jointpos name="panda0_joint4"      joint="panda0_joint4"/>
+        <jointpos name="panda0_joint5"      joint="panda0_joint5"/>
+        <jointpos name="panda0_joint6"      joint="panda0_joint6"/>
+        <jointpos name="panda0_joint7"      joint="panda0_joint7"/>
+
+
     </sensor>
 
 

@@ -78,16 +78,16 @@ install/fast: preinstall/fast
 	/usr/bin/cmake -P cmake_install.cmake
 .PHONY : install/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : edit_cache
+# Special rule for the target rebuild_cache
+rebuild_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
+	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : rebuild_cache
 
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
+# Special rule for the target rebuild_cache
+rebuild_cache/fast: rebuild_cache
 
-.PHONY : edit_cache/fast
+.PHONY : rebuild_cache/fast
 
 # Special rule for the target test
 test:
@@ -100,27 +100,16 @@ test/fast: test
 
 .PHONY : test/fast
 
-# Special rule for the target rebuild_cache
-rebuild_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/usr/bin/cmake -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : rebuild_cache
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : edit_cache
 
-# Special rule for the target rebuild_cache
-rebuild_cache/fast: rebuild_cache
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
 
-.PHONY : rebuild_cache/fast
-
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: install/strip
-
-.PHONY : install/strip/fast
+.PHONY : edit_cache/fast
 
 # Special rule for the target install/local
 install/local: preinstall
@@ -132,6 +121,17 @@ install/local: preinstall
 install/local/fast: install/local
 
 .PHONY : install/local/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: install/strip
+
+.PHONY : install/strip/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -166,19 +166,19 @@ depend:
 .PHONY : depend
 
 # Convenience name for target.
-master_driver/CMakeFiles/omega_driver.dir/rule:
-	cd /home/zzz/mujoco_franka/build && $(MAKE) -f CMakeFiles/Makefile2 master_driver/CMakeFiles/omega_driver.dir/rule
-.PHONY : master_driver/CMakeFiles/omega_driver.dir/rule
+master_driver/CMakeFiles/omega_single.dir/rule:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f CMakeFiles/Makefile2 master_driver/CMakeFiles/omega_single.dir/rule
+.PHONY : master_driver/CMakeFiles/omega_single.dir/rule
 
 # Convenience name for target.
-omega_driver: master_driver/CMakeFiles/omega_driver.dir/rule
+omega_single: master_driver/CMakeFiles/omega_single.dir/rule
 
-.PHONY : omega_driver
+.PHONY : omega_single
 
 # fast build rule for target.
-omega_driver/fast:
-	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/build
-.PHONY : omega_driver/fast
+omega_single/fast:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/build
+.PHONY : omega_single/fast
 
 # Convenience name for target.
 master_driver/CMakeFiles/omega_dual.dir/rule:
@@ -194,33 +194,6 @@ omega_dual: master_driver/CMakeFiles/omega_dual.dir/rule
 omega_dual/fast:
 	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_dual.dir/build.make master_driver/CMakeFiles/omega_dual.dir/build
 .PHONY : omega_dual/fast
-
-src/omega_driver.o: src/omega_driver.cpp.o
-
-.PHONY : src/omega_driver.o
-
-# target to build an object file
-src/omega_driver.cpp.o:
-	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/src/omega_driver.cpp.o
-.PHONY : src/omega_driver.cpp.o
-
-src/omega_driver.i: src/omega_driver.cpp.i
-
-.PHONY : src/omega_driver.i
-
-# target to preprocess a source file
-src/omega_driver.cpp.i:
-	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/src/omega_driver.cpp.i
-.PHONY : src/omega_driver.cpp.i
-
-src/omega_driver.s: src/omega_driver.cpp.s
-
-.PHONY : src/omega_driver.s
-
-# target to generate assembly for a file
-src/omega_driver.cpp.s:
-	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_driver.dir/build.make master_driver/CMakeFiles/omega_driver.dir/src/omega_driver.cpp.s
-.PHONY : src/omega_driver.cpp.s
 
 src/omega_driver_dual.o: src/omega_driver_dual.cpp.o
 
@@ -249,6 +222,33 @@ src/omega_driver_dual.cpp.s:
 	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_dual.dir/build.make master_driver/CMakeFiles/omega_dual.dir/src/omega_driver_dual.cpp.s
 .PHONY : src/omega_driver_dual.cpp.s
 
+src/omega_driver_single.o: src/omega_driver_single.cpp.o
+
+.PHONY : src/omega_driver_single.o
+
+# target to build an object file
+src/omega_driver_single.cpp.o:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/src/omega_driver_single.cpp.o
+.PHONY : src/omega_driver_single.cpp.o
+
+src/omega_driver_single.i: src/omega_driver_single.cpp.i
+
+.PHONY : src/omega_driver_single.i
+
+# target to preprocess a source file
+src/omega_driver_single.cpp.i:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/src/omega_driver_single.cpp.i
+.PHONY : src/omega_driver_single.cpp.i
+
+src/omega_driver_single.s: src/omega_driver_single.cpp.s
+
+.PHONY : src/omega_driver_single.s
+
+# target to generate assembly for a file
+src/omega_driver_single.cpp.s:
+	cd /home/zzz/mujoco_franka/build && $(MAKE) -f master_driver/CMakeFiles/omega_single.dir/build.make master_driver/CMakeFiles/omega_single.dir/src/omega_driver_single.cpp.s
+.PHONY : src/omega_driver_single.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -257,19 +257,19 @@ help:
 	@echo "... depend"
 	@echo "... list_install_components"
 	@echo "... install"
-	@echo "... edit_cache"
-	@echo "... test"
 	@echo "... rebuild_cache"
-	@echo "... omega_driver"
+	@echo "... test"
+	@echo "... edit_cache"
+	@echo "... omega_single"
+	@echo "... install/local"
 	@echo "... omega_dual"
 	@echo "... install/strip"
-	@echo "... install/local"
-	@echo "... src/omega_driver.o"
-	@echo "... src/omega_driver.i"
-	@echo "... src/omega_driver.s"
 	@echo "... src/omega_driver_dual.o"
 	@echo "... src/omega_driver_dual.i"
 	@echo "... src/omega_driver_dual.s"
+	@echo "... src/omega_driver_single.o"
+	@echo "... src/omega_driver_single.i"
+	@echo "... src/omega_driver_single.s"
 .PHONY : help
 
 
