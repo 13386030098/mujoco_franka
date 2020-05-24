@@ -28,7 +28,7 @@ def callback_omega_1(data):
     sim.data.ctrl[4] = data.data[4]
     sim.data.ctrl[5] = data.data[5]
     sim.data.ctrl[6] = data.data[6]
-    print(data.data[0], data.data[1], data.data[2], -0.9 + data.data[3], data.data[4], 1.5 + data.data[5], 0.9 + data.data[6])
+    print(data.data[0], data.data[1], data.data[2], -1.3 + data.data[3], data.data[4], 1.5 + data.data[5], 0.9 + data.data[6])
 
 def listener():
     rospy.init_node('franka_driver', anonymous=True)
@@ -59,6 +59,7 @@ def listener():
         sim.step()
         viewer.render()
 
+#        print(panda0_joint6)
         if t > 100 and os.getenv('TESTING') is not None:
             break
         rate.sleep()

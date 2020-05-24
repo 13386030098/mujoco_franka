@@ -6,6 +6,10 @@
 #include <robot_msgs/omega.h>
 #include <robot_msgs/ik.h>
 
+#include <linux/input.h> //for input_event
+#include <fcntl.h> //for open()
+#include <unistd.h> //for read() & close()
+
 #include <trac_ik/trac_ik.hpp>
 
 #include <kdl/chain.hpp>
@@ -120,10 +124,15 @@ private:
   KDL::Rotation slave_1_M;
   KDL::Rotation slave_2_M;
 
+  std::thread* keyboard_thread_;
+  bool key1, key2;
+
 public:
   teleoperation():
     is_first_1(true),
-    is_first_2(true)
+    is_first_2(true),
+    key1(false),
+    key2(false)
   {
     direction_pos_x = 1;
     direction_pos_y = 1;
@@ -131,18 +140,19 @@ public:
     direction_rpy_r = 1;
     direction_rpy_p = 1;
     direction_rpy_y = 1;
-    scale_p_x = 0.4;
-    scale_p_y = 0.4;
-    scale_p_z = 0.4;
-    scale_r_x = 0.1;
-    scale_r_y = 0.1;
-    scale_r_z = 0.1;
+    scale_p_x = 0.3;
+    scale_p_y = 0.3;
+    scale_p_z = 0.3;
+    scale_r_x = 0.05;
+    scale_r_y = 0.05;
+    scale_r_z = 0.05;
 
     std::cout<<"teleoperation start ..."<<std::endl;
     pub_omega1 = nh.advertise<robot_msgs::ik>("omega1/ik", 100, true);
     pub_omega2 = nh.advertise<robot_msgs::ik>("omega2/ik", 100, true);
     sub_omega1 = nh.subscribe("omega1/omega_map", 100, &teleoperation::operationCallback_1, this);
     sub_omega2 = nh.subscribe("omega2/omega_map", 100, &teleoperation::operationCallback_2, this);
+    keyboard_thread_ = new std::thread(boost::bind(&teleoperation::keyboard_func,this));// read keyboard input thread
 
     nh.param("slave_1_chain_start", slave_1_chain_start, std::string("panda_link0"));
     nh.param("slave_1_chain_end"  , slave_1_chain_end  , std::string("panda_link8"));
@@ -173,9 +183,17 @@ public:
     ROS_INFO ("Using %d joints", slave_1_nj);
     KDL::JntArray slave_1_jointpositions(slave_1_nj);
 
-    for(unsigned int i=0; i< slave_1_nj; i++){
-        slave_1_jointpositions(i)= 0;
-    }
+    slave_1_jointpositions(0) = 0;
+    slave_1_jointpositions(1) = 0;
+    slave_1_jointpositions(2) = 0;
+    slave_1_jointpositions(3) = -1.4;
+    slave_1_jointpositions(4) = 0;
+    slave_1_jointpositions(5) = 1.65;
+    slave_1_jointpositions(6) = 0.9;
+
+//    for(unsigned int i=0; i< slave_1_nj; i++){
+//        slave_1_jointpositions(i)= 0;
+//    }
 
     KDL::Frame slave_1_cartpos;
 
@@ -224,9 +242,18 @@ public:
     ROS_INFO ("Using %d joints", slave_2_nj);
     KDL::JntArray slave_2_jointpositions(slave_2_nj);
 
-    for(unsigned int i=0; i< slave_2_nj; i++){
-        slave_2_jointpositions(i)= 0;
-    }
+    slave_2_jointpositions(0) = 0;
+    slave_2_jointpositions(1) = 0;
+    slave_2_jointpositions(2) = 0;
+    slave_2_jointpositions(3) =  -2;
+    slave_2_jointpositions(4) = 0;
+    slave_2_jointpositions(5) = 2.5;
+    slave_2_jointpositions(6) = 0.9;
+
+
+//    for(unsigned int i=0; i< slave_2_nj; i++){
+//        slave_2_jointpositions(i)= 0;
+//    }
 
     KDL::Frame slave_2_cartpos;
 
@@ -251,6 +278,35 @@ public:
 
 
   ~teleoperation(){}
+  void keyboard_func(void)
+  {
+    int keys_fd;
+    struct input_event t;
+    keys_fd = open ("/dev/input/event4", O_RDONLY);
+    if (keys_fd <= 0){
+      ROS_ERROR("can't open keyboard device!");
+      exit(-1);
+      }
+    else std::cout <<"open keyboard device success"<<std::endl;
+    while (ros::ok())
+    {
+      if (read (keys_fd, &t, sizeof (t)) == sizeof (t))
+        {
+          if(t.value ==1 && t.code == KEY_1)
+          {
+            key1 = true;
+            key2 = false;
+            std::cout << "KEY_1" << std::endl;
+          }
+          if(t.value ==1 && t.code == KEY_2)
+          {
+            key1 = false;
+            key2 = true;
+            std::cout << "KEY_2" << std::endl;
+          }
+        }
+    }
+  }
 
   void operationCallback_1(const robot_msgs::omega::ConstPtr& omega7_msg)
   {
@@ -283,6 +339,16 @@ public:
     omega_1_button = omega7_msg->button[0];
 
     omega_1_button_desire = omega_1_button - omega_1_button_zero;
+
+    if(key1 == true)
+    {
+      master_1_pos_zero = master_1_pos;
+      master_1_rpy_zero = master_1_rpy;
+
+      slave_1_pos_zero = slave_1_desire_pos;
+      slave_1_rotation_zero = slave_1_desire_rotation;
+      return;
+    }
 
     slave_1_desire_pos[0] = direction_pos_x * (master_1_pos[0]-master_1_pos_zero[0]) * scale_p_x + slave_1_pos_zero[0];
     slave_1_desire_pos[1] = direction_pos_y * (master_1_pos[1]-master_1_pos_zero[1]) * scale_p_y + slave_1_pos_zero[1];
@@ -323,9 +389,9 @@ public:
     joint_seed(0) =  0;
     joint_seed(1) =  0;
     joint_seed(2) =  0;
-    joint_seed(3) = -1.0;
+    joint_seed(3) = -1.4;
     joint_seed(4) =  0;
-    joint_seed(5) =  1.5;
+    joint_seed(5) =  1.65;
     joint_seed(6) =  0.9;
 
     int rc = slave_1_ik_solver.CartToJnt(joint_seed, F_dest, result);
@@ -417,9 +483,9 @@ public:
     joint_seed(0) =  0;
     joint_seed(1) =  0;
     joint_seed(2) =  0;
-    joint_seed(3) = -1;
+    joint_seed(3) = -2;
     joint_seed(4) =  0;
-    joint_seed(5) =  2;
+    joint_seed(5) =  2.5;
     joint_seed(6) =  0.9;
 
     int rc = slave_2_ik_solver.CartToJnt(joint_seed, F_dest, result);

@@ -12,22 +12,20 @@ def callback_omega_1(data):
     sim.data.ctrl[0] = data.data[0]
     sim.data.ctrl[1] = data.data[1]
     sim.data.ctrl[2] = data.data[2]
-    sim.data.ctrl[3] = -1.0 + data.data[3]
+    sim.data.ctrl[3] = data.data[3]
     sim.data.ctrl[4] = data.data[4]
-    sim.data.ctrl[5] = 1.5 + data.data[5]
-    sim.data.ctrl[6] = 0.9 + data.data[6]
+    sim.data.ctrl[5] = data.data[5]
+    sim.data.ctrl[6] = data.data[6]
 
 def callback_omega_2(data):
 
     sim.data.ctrl[7]  = data.data[0]
     sim.data.ctrl[8]  = data.data[1]
     sim.data.ctrl[9]  = data.data[2]
-    sim.data.ctrl[10] = -1.2 + data.data[3]
+    sim.data.ctrl[10] = data.data[3]
     sim.data.ctrl[11] = data.data[4]
-    sim.data.ctrl[12] = 2 + data.data[5]
-    sim.data.ctrl[13] = 0.9 + data.data[6]
-
-
+    sim.data.ctrl[12] = data.data[5]
+    sim.data.ctrl[13] = data.data[6]
 
 def listener():
     rospy.init_node('listener', anonymous=True)
@@ -36,7 +34,18 @@ def listener():
     rospy.Subscriber('omega2/ik', ik, callback_omega_2)
     pub = rospy.Publisher('touch_sensor_data', Float64, queue_size=10)
 
-    # rospy.Timer(rospy.Duration(0.02), acquisition)#250hz
+
+    sim.data.ctrl[3] = -1.4
+    sim.data.ctrl[5] = 1.65
+    sim.data.ctrl[6] = 0.9
+
+    sim.data.ctrl[10] = -2
+    sim.data.ctrl[12] = 2.5
+    sim.data.ctrl[13] = 0.9
+
+    sim.data.ctrl[17] = -1.6
+    sim.data.ctrl[19] = 2.3
+    sim.data.ctrl[20] = 0.9
 
     rate = rospy.Rate(1000)
     t = 0
@@ -53,7 +62,7 @@ def listener():
         rate.sleep()
 
 if __name__ == '__main__':
-    model = load_model_from_path("/home/zzz/mujoco_franka/src/mujoco_description/franka_test.xml")
+    model = load_model_from_path("/home/zzz/mujoco_franka/src/mujoco_description/franka_dual_with_bed.xml")
 
     sim = MjSim(model)
     viewer = MjViewer(sim)
